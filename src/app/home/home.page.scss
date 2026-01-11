@@ -1,0 +1,135 @@
+// 1. FOND GÉNÉRAL
+.bg-gray { --background: #f9fafb; }
+
+// 2. HEADERS
+.calendar-top-header {
+  display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;
+  h2 { font-size: 1.5rem; font-weight: 700; margin: 0; color: #1f2937; letter-spacing: -0.5px; }
+}
+
+.filter-header {
+  display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding-left: 5px;
+  h3 { margin: 0; font-size: 1.1rem; font-weight: 600; color: #1f2937; }
+  ion-icon { font-size: 1.2rem; color: #6366f1; }
+}
+
+// 3. CARTES BLANCHES
+.card-white {
+  background: white !important; border-radius: 16px; padding: 15px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.03); border: 1px solid #f3f4f6;
+  display: flex; flex-direction: column;
+
+  ion-list { background: transparent !important; padding: 0; }
+  ion-item {
+    --background: transparent !important; --min-height: 40px; --padding-start: 0;
+    font-size: 0.9rem; color: #374151; cursor: pointer;
+    --background-hover: #f9fafb; --color-hover: #374151; 
+  }
+  ion-checkbox {
+    --checkbox-background: white; --border-color: #d1d5db; --border-width: 2px;
+    --checkmark-color: white; --size: 22px; --border-radius: 6px; margin-right: 12px;
+  }
+}
+    // Ensure checked/un-checked background works across Ionic versions by targeting native part
+    ::ng-deep ion-item.checked ion-checkbox::part(native) {
+      background: var(--fill) !important;
+      border-color: var(--border) !important;
+      box-shadow: none !important;
+    }
+    ::ng-deep ion-item:not(.checked) ion-checkbox::part(native) {
+      background: #ffffff !important;
+      border-color: #cbd5e1 !important;
+      box-shadow: none !important;
+    }
+
+// 4. LAYOUT COLONNE GAUCHE (Fix hauteur min)
+.calendar-col {
+  display: flex; flex-direction: column;
+  .calendar-top-header { flex-shrink: 0; }
+  .card-white {
+    flex-grow: 1; min-height: 200px; 
+    full-calendar { flex-grow: 1; height: 100%; min-height: 100%; }
+  }
+}
+
+// 5. SURCHARGES GLOBALES
+::ng-deep {
+
+  // A. Petit Calendrier (Reste inchangé)
+  ion-datetime {
+    --background: white; --ion-text-color: #1f2937; border-radius: 10px; margin: 0 auto;
+    --wheel-fade-background-rgb: 255, 255, 255; --wheel-highlight-background: #f3f4f6; --wheel-text-color: #374151;
+    &::part(calendar-day) { color: #1f2937; font-weight: 500; }
+    &::part(calendar-day active) { color: white; background-color: var(--ion-color-primary); border-radius: 50%; }
+  }
+
+  // B. Grand Calendrier (Reste inchangé)
+  .fc-timegrid-slot { height: 10px !important; }
+  .fc-timegrid-slot-label-cushion { font-size: 0.8rem; color: #9ca3af; font-weight: 500; }
+  .fc-timegrid-slot-label { border: none !important; }
+  .fc-col-header-cell { border: none !important; padding-bottom: 20px !important; }
+  .fc-col-header-cell-cushion { display: flex; flex-direction: column-reverse; text-transform: capitalize; color: #6b7280; font-weight: 600; gap: 5px; text-decoration: none; }
+  .fc-day-today .fc-col-header-cell-cushion { color: var(--ion-color-primary); }
+  .fc-theme-standard td, .fc-theme-standard .fc-scrollgrid { border-color: #f3f4f6 !important; }
+  .fc-scrollgrid { border: none !important; }
+
+  // --- C. DESIGN DES COURS (COMPRESSÉ POUR PETITS CRÉNEAUX) ---
+  
+  .fc-event {
+    box-shadow: none !important; border: none !important;
+    border-left-width: 4px !important; border-left-style: solid !important;
+    border-radius: 6px !important; 
+    overflow: hidden; 
+    padding: 0;
+  }
+
+  .custom-event-content {
+    display: flex; 
+    flex-direction: column; 
+    // On répartit l'espace : Titre en haut, Heure en bas
+    justify-content: space-between; 
+    height: 100%; width: 100%;
+    
+    // PADDING MINIMUM : 2px en haut/bas pour gagner de la place
+    padding: 2px 5px; 
+    box-sizing: border-box;
+  }
+
+  // 1. LE TITRE
+  .event-title { 
+    flex-shrink: 0; // Ne jamais rétrécir le titre
+    font-weight: 700; 
+    font-size: 0.75rem; // Légèrement plus petit pour que ça rentre
+    line-height: 1;     // Lignes très serrées
+    margin-bottom: 1px; 
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  
+  // 2. LES DÉTAILS (Salle - Prof)
+  .event-details { 
+    flex-shrink: 1; // C'est lui qui rétrécit si manque de place
+    min-height: 0;
+    overflow: hidden;
+    
+    font-size: 0.65rem; 
+    opacity: 0.9; 
+    line-height: 1; // Lignes serrées
+    
+    .text-ellipsis {
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+  }
+  
+  // 3. L'HEURE (Prioritaire)
+  .event-time {
+    flex-shrink: 0; // Ne jamais disparaître !
+    margin-top: 1px; // Juste un petit espace
+    
+    display: flex; align-items: center; gap: 4px;
+    font-size: 0.7rem; 
+    font-weight: normal; 
+    opacity: 1;
+    
+    svg { opacity: 0.8; width: 11px; height: 11px; display: block; }
+  }
+}

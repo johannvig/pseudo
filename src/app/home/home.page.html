@@ -1,0 +1,73 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar color="white">
+    <ion-title slot="start"><b>Agenda</b></ion-title>
+    <ion-item lines="none" slot="end">
+      <ion-avatar slot="start" style="width: 30px; height: 30px;">
+        <img src="https://ionicframework.com/docs/img/demos/avatar.svg" />
+      </ion-avatar>
+      <ion-label>
+        <h2>Profil</h2>
+      </ion-label>
+    </ion-item>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="bg-gray">
+  <ion-grid>
+    <ion-row>
+      
+      <ion-col size="12" size-lg="9" class="calendar-col">
+        
+        <div class="calendar-top-header">
+          <h2>Semaine {{ currentWeek }}</h2>
+          <ion-button (click)="goToday()" color="primary" shape="round">
+            Aujourd'hui
+          </ion-button>
+        </div>
+
+        <div class="card-white">
+          <full-calendar #myCalendar [options]="calendarOptions"></full-calendar>
+        </div>
+
+      </ion-col>
+
+      <ion-col size="12" size-lg="3">
+        
+        <div class="card-white">
+          <ion-datetime 
+            presentation="date" 
+            color="primary"
+            [value]="selectedDate"
+            (ionChange)="changeDate($event)">
+          </ion-datetime>
+        </div>
+
+        <div class="card-white" style="margin-top: 15px;">
+          <div class="filter-header">
+            <h3>Liste des cours</h3>
+            <ion-button fill="clear" size="small" (click)="openSettings()">
+              <ion-icon name="settings-outline" slot="icon-only"></ion-icon>
+            </ion-button>
+          </div>
+          
+          <ion-list lines="none">
+            <ion-item *ngFor="let c of courses" [class.checked]="c.checked" [ngStyle]="{'--fill': c.colorFill, '--border': c.colorBorder || '#cbd5e1', '--text-color': c.textColor || '#000000'}">
+              <ion-checkbox
+                slot="start"
+                mode="md"
+                [(ngModel)]="c.checked"
+                (ionChange)="onCourseToggle(c)"
+                [style.--checkmark-color]="'#ffffff'"
+                [style.--size]="'26px'"
+                [style.--border-radius]="'8px'">
+              </ion-checkbox>
+              <ion-label style="color: #1e3a8a;">{{ c.name }}</ion-label>
+            </ion-item>
+          </ion-list>
+        </div>
+
+      </ion-col>
+
+    </ion-row>
+  </ion-grid>
+</ion-content>

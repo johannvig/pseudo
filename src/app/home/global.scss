@@ -1,0 +1,26 @@
+/* src/global.scss */
+
+ion-modal.event-detail-modal {
+  /* taille */
+  --width: 90vw;
+  --max-width: 650px;
+  --height: auto;
+  --border-radius: 16px;
+
+  /* IMPORTANT : empêche le "modal-shadow" d’être noir (dark mode) */
+  --ion-background-color: transparent !important;
+
+  /* conteneur + ombres */
+  --background: transparent !important;
+  --box-shadow: none !important;
+
+  /* backdrop léger derrière */
+  --ion-backdrop-color: #000 !important;
+  --backdrop-opacity: 0.50 !important;
+}
+
+ion-modal.event-detail-modal::part(content) {
+  background: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+}

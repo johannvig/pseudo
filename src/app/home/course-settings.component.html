@@ -1,0 +1,49 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Personnaliser les cours</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="cancel()">Annuler</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="section-title">Couleurs</div>
+  <p *ngIf="localCourses.length === 0" style="color: #999; font-size: 12px;">Aucun cours pour cette semaine</p>
+  <ion-list lines="none" *ngIf="localCourses.length > 0">
+    <ion-item *ngFor="let c of localCourses">
+      <div style="display: flex; align-items: center; width: 100%; gap: 12px;">
+        <div class="color-preview" [style.background-color]="c.colorFill"></div>
+        <ion-label>{{ c.name }}</ion-label>
+      </div>
+      <div class="color-controls" slot="end">
+        <input type="color" [value]="c.colorFill" (change)="updateColor(c, $event.target.value)" />
+        <input type="text" [value]="c.colorFill" (change)="updateColor(c, $event.target.value)" class="hex-input" />
+      </div>
+    </ion-item>
+  </ion-list>
+
+  <div class="options">
+    <ion-item lines="none">
+      <ion-label style="font-weight: 600;">Options complémentaires</ion-label>
+    </ion-item>
+    <ion-item lines="none">
+      <ion-icon name="eye-off-outline" slot="start"></ion-icon>
+      <ion-label>Mode Daltonisme</ion-label>
+      <ion-toggle slot="end" [(ngModel)]="daltonismEnabled" (ionChange)="toggleDaltonism()"></ion-toggle>
+    </ion-item>
+    <p *ngIf="daltonismEnabled" style="color: #666; font-size: 12px; padding: 8px; margin-top: 8px;">
+      ℹ️ Le mode daltonisme utilise des couleurs optimisées pour les daltoniens. Vos couleurs personnalisées seront conservées.
+    </p>
+    <ion-item lines="none" style="margin-top: 12px;">
+      <ion-button fill="outline" expand="block" (click)="resetColors()">
+        <ion-icon name="refresh-outline" slot="start"></ion-icon>
+        Réinitialiser les couleurs
+      </ion-button>
+    </ion-item>
+  </div>
+
+  <div class="actions">
+    <ion-button expand="block" (click)="save()">Sauvegarder</ion-button>
+  </div>
+</ion-content>

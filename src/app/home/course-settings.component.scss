@@ -1,0 +1,47 @@
+:host {
+  display: block;
+}
+
+.ios{
+  background: none !important;
+}
+
+.section-title {
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.color-preview {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  flex-shrink: 0;
+}
+
+.color-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.color-controls input[type="color"] {
+  width: 44px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+}
+
+.color-controls .hex-input {
+  width: 90px;
+  padding: 4px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.actions {
+  margin-top: 16px;
+}
+
