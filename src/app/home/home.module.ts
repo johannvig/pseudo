@@ -15,5 +15,7 @@ import { FullCalendarModule } from '@fullcalendar/angular'; // <--- Import
     FullCalendarModule // <--- Ajout
   ],
   declarations: [HomePage]
+  
 })
+
 export class HomePageModule {}

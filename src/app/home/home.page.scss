@@ -25,10 +25,6 @@
     font-size: 0.9rem; color: #374151; cursor: pointer;
     --background-hover: #f9fafb; --color-hover: #374151; 
   }
-  ion-checkbox {
-    --checkbox-background: white; --border-color: #d1d5db; --border-width: 2px;
-    --checkmark-color: white; --size: 22px; --border-radius: 6px; margin-right: 12px;
-  }
 }
     // Ensure checked/un-checked background works across Ionic versions by targeting native part
     ::ng-deep ion-item.checked ion-checkbox::part(native) {
@@ -132,4 +128,209 @@
     
     svg { opacity: 0.8; width: 11px; height: 11px; display: block; }
   }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// autre
+.course-checkbox {
+  --size: 26px;
+  --border-radius: 8px;
+
+  --background: var(--checkbox-border);
+  --background-checked: var(--checkbox-border);
+
+  --border-color: var(--checkbox-border);
+  --border-color-checked: var(--checkbox-border);
+
+  --checkmark-color: #ffffff;
+}
+
+.course-checkbox {
+  --size: 26px;
+  --border-radius: 8px;
+  --checkmark-color: #ffffff;
+}
+
+/* État NON coché */
+.course-checkbox::part(container) {
+  background: #ffffff !important;
+  border: 2px solid var(--checkbox-border) !important;
+  box-shadow: none !important;
+}
+
+/* État COCHÉ */
+.course-checkbox.checkbox-checked::part(container) {
+  background: var(--checkbox-border) !important;
+  border: 2px solid var(--checkbox-border) !important;
+}
+
+
+/* Switch Étudiant / Salle */
+.view-switch {
+  margin-bottom: 10px;
+
+  ion-segment {
+    --background: #f3f4f6;
+    border-radius: 12px;
+    padding: 4px;
+  }
+
+  ion-segment-button {
+    --border-radius: 10px;
+    --color: #6b7280;
+    --color-checked: #111827;
+    --indicator-color: #ffffff;
+    font-weight: 600;
+  }
+}
+
+/* CHECKBOX COURS (fond + bordure couleur du cours) */
+.course-checkbox {
+  --size: 26px;
+  --border-radius: 8px;
+  --checkmark-color: #ffffff;
+}
+
+/* non coché : fond blanc, bordure couleur */
+.course-checkbox::part(container) {
+  background: #ffffff !important;
+  border: 2px solid var(--checkbox-border) !important;
+  box-shadow: none !important;
+}
+
+/* coché : fond couleur, bordure même couleur */
+.course-checkbox.checkbox-checked::part(container) {
+  background: var(--checkbox-bg) !important;
+  border: 2px solid var(--checkbox-bg) !important;
+}
+
+/* SALLES */
+.room-badge {
+  --background: #eef2ff;
+  --color: #3730a3;
+  border-radius: 999px;
+  font-weight: 600;
+}
+
+.room-search {
+  --background: #f9fafb;
+  --box-shadow: none;
+  --border-radius: 12px;
+  padding: 0;
+}
+
+.room-list {
+  max-height: 260px;
+  overflow: auto;
+  margin-top: 8px;
+  border-radius: 12px;
+}
+
+.room-item {
+  --background: transparent;
+  --padding-start: 6px;
+
+  ion-icon {
+    color: #6b7280;
+    margin-right: 6px;
+  }
+
+  &.active {
+    --background: #eef2ff;
+    border-radius: 10px;
+
+    ion-label {
+      font-weight: 700;
+      color: #1e40af;
+    }
+
+    ion-icon {
+      color: #1e40af;
+    }
+  }
+}
+
+
+
+// teacher 
+
+.teacher-link {
+  /* reset bouton navigateur */
+  appearance: none;
+  -webkit-appearance: none;
+
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+
+  padding: 0 !important;
+  margin: 0 !important;
+
+  width: fit-content;          /* évite la barre pleine largeur */
+  display: inline-block;
+  align-self: center;          /* centre dans ta colonne */
+
+  cursor: pointer;
+  color: #1e40af;
+
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.teacher-link:focus,
+.teacher-link:active {
+  background: transparent !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.teacher-link:hover {
+  text-decoration: underline;
+}
+
+
+/* badge rouge sur la cloche */
+ion-button {
+  position: relative;
+}
+
+.notif-badge {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  line-height: 18px;
+}
+
+/* style de la toast pour ressembler à une notif */
+::ng-deep .fake-notif-toast {
+  --background: #ffffff;
+  --color: #111827;
+  --border-radius: 14px;
+  --box-shadow: 0 10px 25px rgba(0,0,0,0.18);
+  --width: 420px;
+}
+
+::ng-deep .fake-notif-toast .toast-message {
+  line-height: 1.2;
+}
+
+::ng-deep .fake-notif-toast ion-icon {
+  color: #f59e0b; /* orange warning */
 }

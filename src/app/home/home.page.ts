@@ -4,7 +4,7 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import frLocale from '@fullcalendar/core/locales/fr';
-import { AlertController, ModalController } from '@ionic/angular';
+import { AlertController, ModalController, ToastController } from '@ionic/angular';
 import { FullCalendarComponent } from '@fullcalendar/angular';
 import { getWeek } from 'date-fns';
 
@@ -35,6 +35,8 @@ function getContrastTextColor(hexColor: string): string {
   standalone: false
 })
 export class HomePage {
+viewMode: 'student' | 'room' | 'teacher' = 'student';
+selectedTeacher: string | null = null;
 
   @ViewChild('myCalendar') calendarComponent!: FullCalendarComponent;
 
@@ -64,7 +66,44 @@ export class HomePage {
     gray:   { bg: '#ECE133', border: '#ECE133', text: '#000000' }     // Jaune
   };
 
+
+/** SALLES */
+rooms: string[] = [
+  'JV 120', 'JV 122', 'JV 127', 'NA_J147 (V-40)', 'Amphi A', 'Salle B12'
+];
+filteredRooms: string[] = [];
+roomQuery = '';
+selectedRoom: string | null = null;
+
+ngOnInit() {
+  this.filteredRooms = [...this.rooms];
+}
+
+onViewModeChange() {
+  if (this.viewMode !== 'teacher') {
+  this.selectedTeacher = null;
+}
+this.applyFiltersToCalendar();
+
+}
+
+
+filterRooms() {
+  const q = (this.roomQuery || '').toLowerCase().trim();
+  this.filteredRooms = !q
+    ? [...this.rooms]
+    : this.rooms.filter(r => r.toLowerCase().includes(q));
+}
+
+selectRoom(room: string) {
+  this.selectedRoom = room;
+  this.applyFiltersToCalendar();
+}
+
+
+
   calendarOptions: CalendarOptions = {
+    
     plugins: [timeGridPlugin, dayGridPlugin, interactionPlugin],
     initialView: 'timeGridWeek',
     locale: frLocale,
@@ -580,6 +619,10 @@ export class HomePage {
     ]
   };
 
+// Cache : liste des événements réellement affichés (pour restaurer sans recalcul)
+private baseDisplayedEvents: any[] = [];
+
+
   // Liste des cours créée dynamiquement depuis `calendarOptions.events`.
   courses: Array<{ name: string; colorFill: string; colorBorder?: string; textColor?: string; checked: boolean; isCustomColor?: boolean }> = [];
   // Tous les events d'origine (avec baseName) pour pouvoir les (re)ajouter au calendrier
@@ -589,9 +632,28 @@ export class HomePage {
   // Stocke la clé de couleur originale pour chaque cours (pour pouvoir switcher entre palettes)
   courseColorKeys: Map<string, string> = new Map();
 
-  constructor(private alertCtrl: AlertController, private modalCtrl: ModalController) {
-    this.buildCoursesFromEvents();
-  }
+constructor(
+  private alertCtrl: AlertController,
+  private modalCtrl: ModalController,
+  private toastCtrl: ToastController
+) {
+  this.buildCoursesFromEvents();
+}
+
+  async showFakeNotif() {
+  const toast = await this.toastCtrl.create({
+    message: `Vous n’avez pas badgé\nIl vous reste encore 15 minutes pour aller badger.`,
+
+    duration: 2500,
+    position: 'top',
+    cssClass: 'fake-notif-toast',
+    icon: 'warning-outline',
+    buttons: [{ icon: 'close', role: 'cancel' }]
+  });
+
+  await toast.present();
+}
+
 
   // Récupère la couleur à utiliser selon le mode et les customisations
   private getColorForCourse(baseName: string, defaultColor: string): string {
@@ -812,43 +874,97 @@ export class HomePage {
     });
 
     this.courses = Array.from(map.values());
+    // ---- Construire la liste des salles depuis tous les events ----
+const roomSet = new Set<string>();
+(this.allEvents || []).forEach(ev => {
+  const r = (ev?.extendedProps?.room || '').toString().trim();
+  if (r && r !== '-') roomSet.add(r);
+});
+
+this.rooms = Array.from(roomSet).sort((a, b) => a.localeCompare(b));
+this.filteredRooms = [...this.rooms];
+
   }
+  private applyFiltersToCalendar() {
+  if (!this.calendarComponent) return;
+  const api = this.calendarComponent.getApi();
 
-  // Appelé quand l'utilisateur (dé)selectionne un cours dans la liste
-  onCourseToggle(course: { name: string; colorFill: string; colorBorder?: string; checked: boolean }) {
-    if (!this.calendarComponent) return;
-    const api = this.calendarComponent.getApi();
+  // on repart de la source de vérité : allEvents
+  api.removeAllEvents();
 
-    if (!course.checked) {
-      const events = api.getEvents();
-      events.forEach(ev => {
-        const evBase = (ev.title || '').replace(/\s*\(.*\)/, '').trim();
-        if (evBase === course.name) {
-          ev.remove();
-        }
-      });
-      return;
-    }
+  // 1) MODE SALLE : afficher uniquement la salle sélectionnée
+  if (this.viewMode === 'room') {
+    if (!this.selectedRoom) return;
 
-    const toAdd = this.allEvents.filter(e => e.baseName === course.name);
-    toAdd.forEach(e => {
-      const exists = api.getEvents().some(ev => ev.start?.toISOString() === new Date(e.start).toISOString() && ev.title === e.title);
-      if (!exists) {
-        const colorKey = this.courseColorKeys.get(course.name) || 'blue';
-        const palette = this.getColorPaletteForCourse(course.name, colorKey);
-
-        api.addEvent({
-          title: e.title,
-          start: e.start,
-          end: e.end,
-          extendedProps: e.extendedProps,
-          backgroundColor: palette.bg,
-          borderColor: palette.border,
-          textColor: palette.text
-        });
-      }
+    const filtered = this.allEvents.filter(ev => {
+      const r = (ev?.extendedProps?.room || '').toString().trim();
+      return r === this.selectedRoom;
     });
+
+    filtered.forEach(e => api.addEvent({
+      title: e.title,
+      start: e.start,
+      end: e.end,
+      extendedProps: e.extendedProps,
+      backgroundColor: e.backgroundColor,
+      borderColor: e.borderColor,
+      textColor: e.textColor
+    }));
+
+    return;
   }
+
+  // MODE ENSEIGNANT
+if (this.viewMode === 'teacher') {
+  if (!this.selectedTeacher) return;
+
+  const filtered = this.allEvents.filter(ev => {
+    const t = (ev?.extendedProps?.teacher || '').toString().trim();
+    return t === this.selectedTeacher;
+  });
+
+  filtered.forEach(e => api.addEvent({
+    title: e.title,
+    start: e.start,
+    end: e.end,
+    extendedProps: e.extendedProps,
+    backgroundColor: e.backgroundColor,
+    borderColor: e.borderColor,
+    textColor: e.textColor
+  }));
+
+  return;
+}
+  // 2) MODE ETUDIANT : afficher uniquement les cours cochés
+  const checkedCourses = new Set(
+    (this.courses || []).filter(c => c.checked).map(c => c.name)
+  );
+
+  const filtered = this.allEvents.filter(e => checkedCourses.has(e.baseName));
+
+  filtered.forEach(e => {
+    const colorKey = this.courseColorKeys.get(e.baseName) || 'blue';
+    const palette = this.getColorPaletteForCourse(e.baseName, colorKey);
+
+    api.addEvent({
+      title: e.title,
+      start: e.start,
+      end: e.end,
+      extendedProps: e.extendedProps,
+      backgroundColor: palette.bg,
+      borderColor: palette.border,
+      textColor: palette.text
+    });
+  });
+
+}
+
+
+onCourseToggle(course: { name: string; colorFill: string; colorBorder?: string; checked: boolean }) {
+  if (this.viewMode !== 'student') return; // en mode salle, on ignore
+  this.applyFiltersToCalendar();
+}
+
 
   rebuildCoursesForVisibleRange(start: Date, end: Date) {
     const s = start instanceof Date ? start : new Date(start as any);
@@ -935,5 +1051,13 @@ export class HomePage {
     });
 
     await modal.present();
+    const res = await modal.onWillDismiss();
+
+if (res?.data?.action === 'teacher_schedule' && res.data.teacher) {
+  this.selectedTeacher = res.data.teacher;
+  this.viewMode = 'teacher';
+  this.applyFiltersToCalendar();
+}
+
   }
 }

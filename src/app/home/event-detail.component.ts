@@ -29,8 +29,11 @@ import { CommonModule } from '@angular/common';
 
         <div class="info-row" *ngIf="teacher">
           <span class="label">PROFESSEUR</span>
-          <span class="data">{{ teacher }}</span>
+          <button class="teacher-link" type="button" (click)="openTeacherSchedule()">
+            {{ teacher }}
+          </button>
         </div>
+
 
         <div class="info-row" *ngIf="room">
           <span class="label">LIEU</span>
@@ -142,6 +145,15 @@ import { CommonModule } from '@angular/common';
       color: #d97706;
       font-style: italic;
     }
+
+    
+.teacher-link{
+    background-color:transparent;
+      font-size: 0.95rem;
+      font-weight: 600;
+    color:#111827;
+    }
+
   `]
 })
 export class EventDetailComponent {
@@ -154,6 +166,15 @@ export class EventDetailComponent {
   @Input() color: string = '';
 
   constructor(private modalCtrl: ModalController) {}
+
+openTeacherSchedule() {
+  if (!this.teacher) return;
+  this.modalCtrl.dismiss({
+    action: 'teacher_schedule',
+    teacher: this.teacher
+  });
+}
+
 
   close() {
     this.modalCtrl.dismiss();
